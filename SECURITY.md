@@ -8,7 +8,7 @@ The following versions of **SparkLocal** are currently supported with security u
 | ------- | ------------------ |
 | `5.1.x` | ✅ Yes              |
 | `5.0.x` | ❌ No               |
-| `4.0.x` | ✅ Yes              |
+| `4.0.x` | ❌ No              |
 | `< 4.0` | ❌ No               |
 
 We recommend upgrading to the latest supported version to receive security fixes and updates.
