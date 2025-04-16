@@ -1,72 +1,44 @@
 import { WeatherCondition } from '@/types';
 
-// Mock weather data for different locations
-const mockWeatherData: Record<string, WeatherCondition> = {
-  default: {
-    main: 'Clear',
-    description: 'clear sky',
-    temp: 22,
-    humidity: 60,
-    windSpeed: 5,
-    icon: '01d'
-  },
-  'San Francisco': {
-    main: 'Clouds',
-    description: 'scattered clouds',
-    temp: 18,
-    humidity: 75,
-    windSpeed: 8,
-    icon: '03d'
-  },
-  'Oakland': {
-    main: 'Clear',
-    description: 'clear sky',
-    temp: 20,
-    humidity: 65,
-    windSpeed: 6,
-    icon: '01d'
-  },
-  'Berkeley': {
-    main: 'Mist',
-    description: 'light mist',
-    temp: 17,
-    humidity: 80,
-    windSpeed: 4,
-    icon: '50d'
-  },
-  'Sausalito': {
-    main: 'Clouds',
-    description: 'broken clouds',
-    temp: 16,
-    humidity: 85,
-    windSpeed: 10,
-    icon: '04d'
-  },
-  'Palo Alto': {
-    main: 'Clear',
-    description: 'clear sky',
-    temp: 23,
-    humidity: 55,
-    windSpeed: 3,
-    icon: '01d'
+const API_KEY = '4862d5e067388e783d46e5265ed1c203';
+
+// Function to fetch weather data from OpenWeather API
+export const fetchWeather = async (location: string = 'San Francisco'): Promise<WeatherCondition> => {
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&units=metric&appid=${API_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Weather data fetch failed for ${location}`);
+    }
+
+    const data = await response.json();
+
+    const weather: WeatherCondition = {
+      main: data.weather[0].main,
+      description: data.weather[0].description,
+      temp: data.main.temp,
+      humidity: data.main.humidity,
+      windSpeed: data.wind.speed,
+      icon: data.weather[0].icon,
+    };
+
+    return weather;
+  } catch (error) {
+    console.error('Error fetching weather:', error);
+    return {
+      main: 'Unknown',
+      description: 'Unable to fetch data',
+      temp: 0,
+      humidity: 0,
+      windSpeed: 0,
+      icon: '01d',
+    };
   }
 };
 
-// Function to fetch weather data
-export const fetchWeather = async (location: string = 'San Francisco'): Promise<WeatherCondition> => {
-  // In a real app, we would make an API call to a weather service
-  // For this demo, we'll use mock data
-  
-  return new Promise((resolve) => {
-    // Simulate network delay
-    setTimeout(() => {
-      // Return mock data for the specified location or default
-      resolve(mockWeatherData[location] || mockWeatherData.default);
-    }, 500);
-  });
-};
-
-// Function to get weather emoji based on weather condition
+// Get weather emoji based on condition
 export const getWeatherEmoji = (condition: string): string => {
   switch (condition.toLowerCase()) {
     case 'clear':
@@ -89,7 +61,7 @@ export const getWeatherEmoji = (condition: string): string => {
   }
 };
 
-// Function to get weather icon name for Lucide icons
+// Get Lucide weather icon name
 export const getWeatherIcon = (condition: string): string => {
   switch (condition.toLowerCase()) {
     case 'clear':
@@ -112,7 +84,7 @@ export const getWeatherIcon = (condition: string): string => {
   }
 };
 
-// Function to get weather recommendation
+// Weather recommendation
 export const getWeatherRecommendation = (weather: WeatherCondition): string => {
   if (weather.main === 'Clear' && weather.temp > 20) {
     return "Perfect weather for outdoor activities!";
@@ -131,7 +103,7 @@ export const getWeatherRecommendation = (weather: WeatherCondition): string => {
   }
 };
 
-// Function to get suitable date ideas based on weather
+// Date ideas based on weather
 export const getSuitableDateIdeas = (weather: WeatherCondition): string[] => {
   if (weather.main === 'Clear' && weather.temp > 20) {
     return ['Picnic', 'Beach', 'Hiking', 'Outdoor Dining'];
